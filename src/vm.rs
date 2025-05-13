@@ -159,6 +159,7 @@ impl Vm {
     fn pop_i32(&mut self) -> Result<i32, VmError> {
         match self.stack.pop() {
             Some(Value::I32(val)) => Ok(val),
+            #[allow(unreachable_patterns)]
             Some(_) => Err(VmError::TypeMismatch),
             None => Err(VmError::StackUnderflow),
         }
