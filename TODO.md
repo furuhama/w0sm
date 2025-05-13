@@ -1,21 +1,21 @@
 # w0sm Implementation TODO
 
-- [ ] Define basic VM structure (`struct Vm`) (`src/lib.rs`)
-    - [ ] Stack (`Vec<Value>`)
-    - [ ] Program Counter (`usize`)
-    - [ ] Instruction Sequence (`Vec<Instruction>`)
-- [ ] Define Wasm Value types (i32, i64, f32, f64)
-- [ ] Define Wasm Instruction enum (start with basic ones)
-- [ ] Define VmError enum
-- [ ] Instruction Decoding Logic (Tentative: Receive instruction sequence directly)
-- [ ] Implement Execution Loop (`run` method)
+- [x] Define basic VM structure (`struct Vm`) (`src/lib.rs`)
+    - [x] Stack (`Vec<Value>`)
+    - [x] Program Counter (`usize`)
+    - [x] Instruction Sequence (`Vec<Instruction>`)
+- [x] Define Wasm Value types (i32, i64, f32, f64)
+- [x] Define Wasm Instruction enum (start with basic ones)
+- [x] Define VmError enum
+- [x] Instruction Decoding Logic (Tentative: Receive instruction sequence directly)
+- [x] Implement Execution Loop (`run` method)
 - [ ] Implement Stack Manipulation Instructions
     - [ ] `local.get` / `local.set` (Manage locals with stack frames)
     - [ ] `global.get` / `global.set` (Decide how to manage globals)
-    - [ ] `const` instructions (Push constants onto the stack)
+    - [x] `const` instructions (Push constants onto the stack)
     - [ ] `drop`
 - [ ] Implement Arithmetic Instructions (start with `i32`)
-    - [ ] `i32.add`
+    - [x] `i32.add`
     - [ ] `i32.sub`
     - [ ] `i32.mul`
     - [ ] `i32.div_s` / `i32.div_u`
