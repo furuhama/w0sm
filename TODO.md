@@ -11,7 +11,7 @@
 - [x] Implement Execution Loop (`run` method)
 - [ ] Implement Stack Manipulation Instructions
     - [ ] `local.get` / `local.set` (Manage locals with stack frames)
-    - [ ] `global.get` / `global.set` (Decide how to manage globals)
+    - [x] `global.get` / `global.set` (Decide how to manage globals)
     - [x] `const` instructions (Push constants onto the stack)
     - [ ] `drop`
 - [ ] Implement Arithmetic Instructions (start with `i32`)
