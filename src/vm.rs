@@ -215,57 +215,54 @@ impl Vm {
                             }
                             "func" => {
                                 for instr in subnodes {
-                                    match instr {
-                                        WatNode::Instruction(iname, ivals) => {
-                                            match iname.as_str() {
-                                                "i32.const" => {
-                                                    if let WatNode::Number(n) = &ivals[0] {
-                                                        instructions
-                                                            .push(Instruction::I32Const(*n));
-                                                    }
-                                                }
-                                                "i32.add" => instructions.push(Instruction::I32Add),
-                                                "global.get" => {
-                                                    if let WatNode::Identifier(gname) = &ivals[0] {
-                                                        if let Some(idx) =
-                                                            global_indices.get(gname.as_str())
-                                                        {
-                                                            instructions
-                                                                .push(Instruction::GlobalGet(*idx));
-                                                        } else {
-                                                            return Err(format!(
-                                                                "Unknown global: {}",
-                                                                gname
-                                                            ));
-                                                        }
-                                                    }
-                                                }
-                                                "global.set" => {
-                                                    if let WatNode::Identifier(gname) = &ivals[0] {
-                                                        if let Some(idx) =
-                                                            global_indices.get(gname.as_str())
-                                                        {
-                                                            instructions
-                                                                .push(Instruction::GlobalSet(*idx));
-                                                        } else {
-                                                            return Err(format!(
-                                                                "Unknown global: {}",
-                                                                gname
-                                                            ));
-                                                        }
-                                                    }
-                                                }
-                                                "nop" => instructions.push(Instruction::Nop),
-                                                "return" => instructions.push(Instruction::Return),
-                                                _ => {
-                                                    return Err(format!(
-                                                        "Unknown instruction: {}",
-                                                        iname
-                                                    ));
+                                    if let WatNode::Instruction(iname, ivals) = instr {
+                                        match iname.as_str() {
+                                            "i32.const" => {
+                                                if let WatNode::Number(n) = &ivals[0] {
+                                                    instructions
+                                                        .push(Instruction::I32Const(*n));
                                                 }
                                             }
+                                            "i32.add" => instructions.push(Instruction::I32Add),
+                                            "global.get" => {
+                                                if let WatNode::Identifier(gname) = &ivals[0] {
+                                                    if let Some(idx) =
+                                                        global_indices.get(gname.as_str())
+                                                    {
+                                                        instructions
+                                                            .push(Instruction::GlobalGet(*idx));
+                                                    } else {
+                                                        return Err(format!(
+                                                            "Unknown global: {}",
+                                                            gname
+                                                        ));
+                                                    }
+                                                }
+                                            }
+                                            "global.set" => {
+                                                if let WatNode::Identifier(gname) = &ivals[0] {
+                                                    if let Some(idx) =
+                                                        global_indices.get(gname.as_str())
+                                                    {
+                                                        instructions
+                                                            .push(Instruction::GlobalSet(*idx));
+                                                    } else {
+                                                        return Err(format!(
+                                                            "Unknown global: {}",
+                                                            gname
+                                                        ));
+                                                    }
+                                                }
+                                            }
+                                            "nop" => instructions.push(Instruction::Nop),
+                                            "return" => instructions.push(Instruction::Return),
+                                            _ => {
+                                                return Err(format!(
+                                                    "Unknown instruction: {}",
+                                                    iname
+                                                ));
+                                            }
                                         }
-                                        _ => {}
                                     }
                                 }
                             }
