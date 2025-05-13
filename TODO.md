@@ -1,0 +1,52 @@
+# w0sm Implementation TODO
+
+- [ ] Define basic VM structure (`struct Vm`) (`src/lib.rs`)
+    - [ ] Stack (`Vec<Value>`)
+    - [ ] Program Counter (`usize`)
+    - [ ] Instruction Sequence (`Vec<Instruction>`)
+- [ ] Define Wasm Value types (i32, i64, f32, f64)
+- [ ] Define Wasm Instruction enum (start with basic ones)
+- [ ] Define VmError enum
+- [ ] Instruction Decoding Logic (Tentative: Receive instruction sequence directly)
+- [ ] Implement Execution Loop (`run` method)
+- [ ] Implement Stack Manipulation Instructions
+    - [ ] `local.get` / `local.set` (Manage locals with stack frames)
+    - [ ] `global.get` / `global.set` (Decide how to manage globals)
+    - [ ] `const` instructions (Push constants onto the stack)
+    - [ ] `drop`
+- [ ] Implement Arithmetic Instructions (start with `i32`)
+    - [ ] `i32.add`
+    - [ ] `i32.sub`
+    - [ ] `i32.mul`
+    - [ ] `i32.div_s` / `i32.div_u`
+    - [ ] `i32.rem_s` / `i32.rem_u`
+- [ ] Implement Comparison Instructions (`i32`)
+    - [ ] `i32.eqz`
+    - [ ] `i32.eq`
+    - [ ] `i32.ne`
+    - [ ] `i32.lt_s` / `i32.lt_u`
+    - [ ] `i32.gt_s` / `i32.gt_u`
+    - [ ] `i32.le_s` / `i32.le_u`
+    - [ ] `i32.ge_s` / `i32.ge_u`
+- [ ] Implement Memory Management
+    - [ ] Allocate Linear Memory (`Vec<u8>`)
+    - [ ] `i32.load` / `i64.load` / `f32.load` / `f64.load`
+    - [ ] `i32.store` / `i64.store` / `f32.store` / `f64.store`
+- [ ] Implement Control Flow Instructions
+    - [ ] `nop`
+    - [ ] `unreachable`
+    - [ ] `block` / `loop` / `if` (Represent and execute block structures)
+    - [ ] `br`
+    - [ ] `br_if`
+    - [ ] `br_table`
+    - [ ] `return`
+- [ ] Implement Function Calls
+    - [ ] `call`
+    - [ ] Stack Frame Management
+- [ ] Create tests to run simple Wasm modules
+- [ ] Implement Wasm Binary Parser (Use external crate or build from scratch)
+- [ ] (Advanced) Implement Floating-Point Arithmetic Instructions
+- [ ] (Advanced) Implement Tables and `call_indirect`
+- [ ] (Advanced) Implement External Functions (Imports/Exports)
+- [ ] (Advanced) Implement More Instructions
+- [ ] JIT Compilation
