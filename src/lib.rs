@@ -1,5 +1,8 @@
 use std::vec::Vec;
 use thiserror::Error;
+mod wat_parser;
+use std::collections::HashMap;
+use wat_parser::{WatNode, WatParser};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
@@ -162,6 +165,120 @@ impl Vm {
             None => Err(VmError::StackUnderflow),
         }
     }
+
+    pub fn from_wat(wat: &str) -> Result<Self, String> {
+        let mut parser = WatParser::new(wat);
+        let ast = parser.parse()?;
+        let mut vm = Vm::new(vec![]);
+        let mut instructions = Vec::new();
+        let mut global_indices = HashMap::new();
+
+        if let WatNode::Instruction(name, nodes) = ast {
+            if name == "module" {
+                for node in nodes {
+                    if let WatNode::Instruction(subname, subnodes) = node {
+                        match subname.as_str() {
+                            "global" => {
+                                let mut var_name = None;
+                                let mut mutable = false;
+                                let mut value_type = ValueType::I32;
+                                let mut initial_value = Value::I32(0);
+                                for sub in subnodes {
+                                    match sub {
+                                        WatNode::Identifier(s) if s.starts_with('$') => {
+                                            var_name = Some(s.clone())
+                                        }
+                                        WatNode::Instruction(iname, ivals) if iname == "mut" => {
+                                            mutable = true;
+                                            if let WatNode::Identifier(s) = &ivals[0] {
+                                                if s == "i32" {
+                                                    value_type = ValueType::I32;
+                                                }
+                                            }
+                                        }
+                                        WatNode::Identifier(s) if s == "i32" => {
+                                            value_type = ValueType::I32
+                                        }
+                                        WatNode::Instruction(iname, ivals)
+                                            if iname == "i32.const" =>
+                                        {
+                                            if let WatNode::Number(n) = ivals[0] {
+                                                initial_value = Value::I32(n);
+                                            }
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                                let idx = vm.add_global(value_type, mutable, initial_value);
+                                if let Some(name) = var_name {
+                                    global_indices.insert(name.clone(), idx);
+                                }
+                            }
+                            "func" => {
+                                for instr in subnodes {
+                                    match instr {
+                                        WatNode::Instruction(iname, ivals) => {
+                                            match iname.as_str() {
+                                                "i32.const" => {
+                                                    if let WatNode::Number(n) = &ivals[0] {
+                                                        instructions
+                                                            .push(Instruction::I32Const(*n));
+                                                    }
+                                                }
+                                                "i32.add" => instructions.push(Instruction::I32Add),
+                                                "global.get" => {
+                                                    if let WatNode::Identifier(gname) = &ivals[0] {
+                                                        if let Some(idx) =
+                                                            global_indices.get(gname.as_str())
+                                                        {
+                                                            instructions
+                                                                .push(Instruction::GlobalGet(*idx));
+                                                        } else {
+                                                            return Err(format!(
+                                                                "Unknown global: {}",
+                                                                gname
+                                                            ));
+                                                        }
+                                                    }
+                                                }
+                                                "global.set" => {
+                                                    if let WatNode::Identifier(gname) = &ivals[0] {
+                                                        if let Some(idx) =
+                                                            global_indices.get(gname.as_str())
+                                                        {
+                                                            instructions
+                                                                .push(Instruction::GlobalSet(*idx));
+                                                        } else {
+                                                            return Err(format!(
+                                                                "Unknown global: {}",
+                                                                gname
+                                                            ));
+                                                        }
+                                                    }
+                                                }
+                                                "nop" => instructions.push(Instruction::Nop),
+                                                "return" => instructions.push(Instruction::Return),
+                                                _ => {
+                                                    return Err(format!(
+                                                        "Unknown instruction: {}",
+                                                        iname
+                                                    ));
+                                                }
+                                            }
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            }
+        }
+        vm.instructions = instructions;
+        Ok(vm)
+    }
 }
 
 #[cfg(test)]
@@ -276,5 +393,96 @@ mod tests {
         let result = vm.run();
         assert!(result.is_err());
         assert!(matches!(result.err().unwrap(), VmError::StackUnderflow));
+    }
+
+    #[test]
+    fn test_from_wat_simple() {
+        let wat = r#"
+            (module
+                (func $add
+                    (i32.const 1)
+                    (i32.const 2)
+                    (i32.add)
+                    (return)
+                )
+            )
+        "#;
+        let vm = Vm::from_wat(wat).unwrap();
+        let mut vm = vm;
+        let result = vm.run().unwrap();
+        assert_eq!(result, Some(Value::I32(3)));
+    }
+
+    #[test]
+    fn test_from_wat_with_globals() {
+        let wat = r#"
+            (module
+                (global $x (mut i32) (i32.const 42))
+                (global $y i32 (i32.const 100))
+                (func $test
+                    (global.get $x)
+                    (i32.const 1)
+                    (i32.add)
+                    (global.set $x)
+                    (global.get $x)
+                    (return)
+                )
+            )
+        "#;
+        let vm = Vm::from_wat(wat).unwrap();
+        let mut vm = vm;
+        let result = vm.run().unwrap();
+        assert_eq!(result, Some(Value::I32(43)));
+    }
+
+    #[test]
+    fn test_from_wat_immutable_global_error() {
+        let wat = r#"
+            (module
+                (global $x i32 (i32.const 42))
+                (func $test
+                    (global.get $x)
+                    (i32.const 1)
+                    (i32.add)
+                    (global.set $x)
+                    (return)
+                )
+            )
+        "#;
+        let vm = Vm::from_wat(wat).unwrap();
+        let mut vm = vm;
+        let result = vm.run();
+        assert!(result.is_err());
+        assert!(matches!(result.err().unwrap(), VmError::ImmutableGlobal));
+    }
+
+    #[test]
+    fn test_from_wat_unknown_global() {
+        let wat = r#"
+            (module
+                (func $test
+                    (global.get $unknown)
+                    (return)
+                )
+            )
+        "#;
+        let result = Vm::from_wat(wat);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Unknown global"));
+    }
+
+    #[test]
+    fn test_from_wat_unknown_instruction() {
+        let wat = r#"
+            (module
+                (func $test
+                    (unknown_instruction)
+                    (return)
+                )
+            )
+        "#;
+        let result = Vm::from_wat(wat);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Unknown instruction"));
     }
 }
