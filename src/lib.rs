@@ -40,6 +40,7 @@ pub enum VmError {
 
 #[derive(Debug, Clone)]
 pub struct Global {
+    #[allow(unused)]
     value_type: ValueType,
     mutable: bool,
 }
@@ -50,6 +51,7 @@ pub struct GlobalInstance {
     value: Value,
 }
 
+#[derive(Debug)]
 pub struct Vm {
     stack: Vec<Value>,
     instructions: Vec<Instruction>,
@@ -146,6 +148,7 @@ impl Vm {
                 Instruction::Return => {
                     return Ok(self.stack.pop());
                 }
+                #[allow(unreachable_patterns)]
                 _ => return Err(VmError::NotImplemented(format!("{:?}", instruction))),
             }
         }
