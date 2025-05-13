@@ -1,8 +1,7 @@
+use crate::wat_parser::{WatNode, WatParser};
+use std::collections::HashMap;
 use std::vec::Vec;
 use thiserror::Error;
-mod wat_parser;
-use std::collections::HashMap;
-use wat_parser::{WatNode, WatParser};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {

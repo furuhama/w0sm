@@ -1,4 +1,7 @@
-use w0sm::{Vm, VmError};
+mod vm;
+mod wat_parser;
+
+use vm::{Vm, VmError};
 
 fn main() -> Result<(), VmError> {
     println!("w0sm: A simple Wasm VM");
