@@ -1,5 +1,6 @@
 # w0sm Implementation TODO
 
+## VM Support
 - [x] Define basic VM structure (`struct Vm`) (`src/lib.rs`)
     - [x] Stack (`Vec<Value>`)
     - [x] Program Counter (`usize`)
@@ -50,3 +51,34 @@
 - [ ] (Advanced) Implement External Functions (Imports/Exports)
 - [ ] (Advanced) Implement More Instructions
 - [ ] JIT Compilation
+
+## WAT (WebAssembly Text Format) Support
+- [x] Basic WAT Parser Implementation
+- [ ] Comment Support
+- [ ] String Literal Support
+- [ ] Error Position Tracking
+- [ ] Detailed Error Messages
+- [ ] Type Checking
+- [ ] Function Signature Parsing
+- [ ] Import/Export Support
+- [ ] Custom Section Support
+
+## WASM (WebAssembly Binary Format) Support
+- [ ] Basic WASM Parser Implementation
+- [ ] Magic Number Validation
+- [ ] Version Number Validation
+- [ ] Section Parsing
+    - [ ] Type Section
+    - [ ] Import Section
+    - [ ] Function Section
+    - [ ] Table Section
+    - [ ] Memory Section
+    - [ ] Global Section
+    - [ ] Export Section
+    - [ ] Start Section
+    - [ ] Element Section
+    - [ ] Code Section
+    - [ ] Data Section
+- [ ] LEB128 Decoding
+- [ ] Custom Section Support
+- [ ] Name Section Support
