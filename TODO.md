@@ -34,17 +34,17 @@
     - [ ] `i32.load` / `i64.load` / `f32.load` / `f64.load`
     - [ ] `i32.store` / `i64.store` / `f32.store` / `f64.store`
 - [ ] Implement Control Flow Instructions
-    - [ ] `nop`
+    - [x] `nop`
     - [ ] `unreachable`
     - [ ] `block` / `loop` / `if` (Represent and execute block structures)
     - [ ] `br`
     - [ ] `br_if`
     - [ ] `br_table`
-    - [ ] `return`
+    - [x] `return`
 - [ ] Implement Function Calls
     - [ ] `call`
     - [ ] Stack Frame Management
-- [ ] Create tests to run simple Wasm modules
+- [x] Create tests to run simple Wasm modules
 - [ ] Implement Wasm Binary Parser (Use external crate or build from scratch)
 - [ ] (Advanced) Implement Floating-Point Arithmetic Instructions
 - [ ] (Advanced) Implement Tables and `call_indirect`
