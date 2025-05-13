@@ -6,7 +6,6 @@ use thiserror::Error;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     I32(i32),
-    I64(i64),
 }
 
 #[derive(Debug, Clone, PartialEq)]
